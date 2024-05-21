@@ -1,8 +1,27 @@
 # AGCapital-Challenge
+
 This is a challenge for a vacation job in Ag Capital
 
-## Setup
-Run `yarn install`
-Run `yarn dev`
+## Project Setup
 
-## 
+```sh
+yarn
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+yarn dev
+```
+
+### Type-Check, Compile and Minify for Production
+
+```sh
+yarn build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+yarn lint
+```
