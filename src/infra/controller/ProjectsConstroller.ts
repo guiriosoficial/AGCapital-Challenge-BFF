@@ -50,14 +50,14 @@ class ProjectsController {
       }
     })
 
-    httpServer.on('post', `${projectsPath}/:projecId`, async (
+    httpServer.on('patch', `${projectsPath}/:projecId`, async (
       params: { projecId: string },
       body: object,
       _headers: object,
       _query: object
     ): Promise<HttpServerCallbackDTO> => {
       try {
-        const result = await this.projectsUseCases.updateProject(params.projecId, body)
+        const result = await this.projectsUseCases.editProject(params.projecId, body)
         return {
           status: 200,
           body: result

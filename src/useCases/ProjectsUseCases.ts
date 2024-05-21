@@ -20,6 +20,7 @@ class ProjectsUseCases {
         .map((doc) => ({
           description: doc.data().description,
           name: doc.data().name,
+          status: doc.data().status,
           id: doc.id
         }))
 
@@ -48,11 +49,14 @@ class ProjectsUseCases {
     }
   }
 
-  async updateProject (projectId: string, data: object): Promise<object> {
+  async editProject (projectId: string, data: object): Promise<object> {
     await this.db.collection(projectsCollections).doc(projectId).update(data)
+    const res = await this.db.collection(projectsCollections).doc(projectId).get()
     return {
-      id: projectId,
-      ...data
+      id: res.id,
+      name: res.data()?.name,
+      description: res.data()?.description,
+      status: res.data()?.status
     }
   }
 
