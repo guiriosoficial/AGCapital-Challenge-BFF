@@ -43,8 +43,8 @@ class ProjectsUseCases {
     }
     const res = await this.db.collection(projectsCollections).add(payload)
     return {
-      id: res.id,
-      ...data
+      ...data,
+      id: res.id
     }
   }
 
@@ -52,7 +52,7 @@ class ProjectsUseCases {
     await this.db.collection(projectsCollections).doc(projectId).update(data)
     return {
       id: projectId,
-      data
+      ...data
     }
   }
 
