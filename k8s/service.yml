@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: configurations-bff
+  namespace: configuracao
+spec:
+  selector:
+    name: configurations-bff
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8081
+      

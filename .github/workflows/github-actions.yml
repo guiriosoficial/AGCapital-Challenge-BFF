@@ -1,0 +1,91 @@
+name: Build and Publish
+on:
+  push:
+    branches:
+      - main
+
+env:
+  URL_WORKSPACES_API: http://workspace-service.default.svc.cluster.local
+  URL_ACCOUNT_API: http://account-service.default.svc.cluster.local
+  URL_DISPUTES_API: http://dispute-service.default.svc.cluster.local
+  URL_DOCUMENT_API: http://office-service.default.svc.cluster.local
+  URL_DOMAIN_API: http://email-domain-service.default.svc.cluster.local
+  URL_CACHE_API: http://autenticacao-cache-service.default.svc.cluster.local
+  URL_USAGE_API: http://usage-service.default.svc.cluster.local
+  URL_INSTITUICAO_FINANCEIRA_API: http://sa-gestao-instituicao-financeira.gestao-operacional.svc.cluster.local
+  URL_ANSWER_GENERATOR: http://gerador-resposta-service.default.svc.cluster.local
+  CONFIGURATIONS_BFF_BASE_URL: /api/configurations-bff/v1
+  NODE_ENV: production
+
+jobs:
+  Build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::247761945410:role/GithubActionRole
+          aws-region: sa-east-1
+
+      - name: Create AWS ECR repository
+        uses: uspacy/aws-ecr-action@v1
+        with:
+          repositoryName: justto/configurations-bff
+
+      - uses: actions/checkout@v4
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 247761945410
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install
+      # - name: Run all tests
+      #   run: yarn test
+
+      - name: Build and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: 247761945410.dkr.ecr.sa-east-1.amazonaws.com
+          ECR_REPOSITORY: justto/configurations-bff
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo $steps.login-ecr.outputs.registry
+          echo $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: 'Install kustomize'
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: v3.6.1
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: 'Update app version in kustomization file'
+        run: |
+          cd k8s
+          kustomize edit set image 247761945410.dkr.ecr.sa-east-1.amazonaws.com/justto/configurations-bff=247761945410.dkr.ecr.sa-east-1.amazonaws.com/justto/configurations-bff:${{ github.sha }}
+          cat kustomization.yaml
+
+      - name: "Github commit and push"
+        uses: Smart-Transportation/push@v1.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          author_email: "github@justto.com.br"
+          author_name: "GitHub Actions"
+          message: "Changing image tag to version ${{ github.sha }}"
+          branch: ${{ github.ref }}

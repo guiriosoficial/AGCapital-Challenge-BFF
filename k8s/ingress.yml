@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: configurations-bff
+  namespace: configuracao
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/tls-acme: "false"
+    meta.helm.sh/release-name: configurations-bff
+    meta.helm.sh/release-namespace: configuracao
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "5"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header 'Access-Control-Allow-Headers' 'DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,authority,accept,accept-language,referer,sec-ch-ua,sec-ch-ua-mobile,sec-ch-ua-platform,sec-fetch-dest,sec-fetch-mode,sec-fetch-site,user-agent,userbrowsername,userlanguage,useros,usertimezone,workspace' always;
+spec:
+  ingressClassName: nginx-infra
+  tls:
+    - hosts:
+        - "*.justto.app"
+      secretName: api-justto-app-tls
+  rules:
+    - host: "*.justto.app"
+      http:
+        paths:
+          - path: /api/configurations-bff/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: configurations-bff
+                port:
+                  number: 80

@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configurations-bff
+  namespace: configuracao
+spec:
+  selector:
+    matchLabels:
+      name: configurations-bff
+  template:
+    metadata:
+      labels:
+        name: configurations-bff
+    spec:
+      containers:
+        - name: autenticacao-autorizacao-sidecar
+          image: 247761945410.dkr.ecr.sa-east-1.amazonaws.com/justto/autenticacao-autorizacao-service:latest
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "256Mi"
+            requests:
+              cpu: "0.002"
+              memory: "64Mi"
+          env:
+            - name: API_BASE_URL
+              value: http://localhost:3001
+            - name: PORT
+              value: "8081"
+            - name: API_ACCOUNT_BASE_URL
+              value: http://sa-account-service.default.svc.cluster.local
+            - name: API_WORKSPACE_BASE_URL
+              value: http://sa-workspace-service.default.svc.cluster.local
+            - name: API_AUTENTICACAO_CACHE_BASE_URL
+              value: http://autenticacao-cache-service.default.svc.cluster.local
+            - name: API_ENDPOINTS_ANONIMOS
+              value: '[ ]'
+            - name: API_ENDPOINTS_ADMIN
+              value: '["/api/configurations-bff/v1/*"]'  
+          ports:
+            - name: http
+              containerPort: 8081
+          readinessProbe:
+            initialDelaySeconds: 1
+            failureThreshold: 6
+            httpGet:
+              path: /api/healthcheck
+              port: 8081
+          livenessProbe:
+            initialDelaySeconds: 10
+            failureThreshold: 6
+            httpGet:
+              path: /api/healthcheck
+              port: 8081
+        - name: configurations-bff
+          image: 247761945410.dkr.ecr.sa-east-1.amazonaws.com/justto/configurations-bff
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: "256Mi"
+            requests:
+              cpu: "0.4"
+              memory: "64Mi"
+          env:
+            - name: URL_WORKSPACES_API
+              value: http://sa-workspace-service.default.svc.cluster.local
+            - name: URL_ACCOUNT_API
+              value: http://sa-account-service.default.svc.cluster.local
+            - name: URL_DISPUTES_API
+              value: http://sa-dispute-service.default.svc.cluster.local
+            - name: URL_DOCUMENT_API
+              value: http://sa-office-service.default.svc.cluster.local
+            - name: URL_DOMAIN_API
+              value: http://sa-email-domain-service.default.svc.cluster.local
+            - name: URL_USAGE_API
+              value: http://sa-usage-service.default.svc.cluster.local
+            - name: URL_CACHE_API
+              value: http://autenticacao-cache-service.default.svc.cluster.local
+            - name: URL_INSTITUICAO_FINANCEIRA_API
+              value: http://sa-gestao-instituicao-financeira.gestao-operacional.svc.cluster.local
+            - name: URL_ANSWER_GENERATOR
+              value: http://gerador-resposta-service.gestao-operacional.svc.cluster.local
+            - name: CONFIGURATIONS_BFF_BASE_URL
+              value: "/api/configurations-bff/v1"
+          ports:
+            - name: http
+              containerPort: 3001
+          readinessProbe:
+            initialDelaySeconds: 1
+            failureThreshold: 10
+            httpGet:
+              path: /api/configurations-bff/v1/healthcheck
+              port: 3001
+          livenessProbe:
+            initialDelaySeconds: 10
+            failureThreshold: 6
+            httpGet:
+              path: /api/configurations-bff/v1/healthcheck
+              port: 3001
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: configurations-bff-pdb
+  namespace: configuracao
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: configurations-bff
