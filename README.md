@@ -1,6 +1,6 @@
 # AGCapital-Challenge
 
-This is a challenge for a vacation job in Ag Capital
+This is the Back for Front for challenge for Ag Capital challenge project (vacation job hallenge)
 
 ## Project Setup
 
