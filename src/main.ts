@@ -3,10 +3,10 @@ import ExpressAdapter from './infra/http/ExpressAdapter'
 import ProjectsUseCases from './useCases/ProjectsUseCases'
 import TasksUseCases from './useCases/TasksUseCases'
 import ClientsUseCases from './useCases/ClientsUseCases'
-import ProjectsController from './infra/controller/ProjectsConstroller'
+import ProjectsController from './infra/controller/ProjectsController'
 import TasksController from './infra/controller/TasksController'
 import ClientsController from './infra/controller/ClientsController'
-import db from './infra/database/FirestoreConection'
+import db from './infra/database/FirestoreConnection'
 
 dotenv.config({ path: '.env.local' })
 dotenv.config()

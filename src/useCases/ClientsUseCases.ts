@@ -1,5 +1,5 @@
 // import type { DocumentReference, CollectionReference } from 'firebase-admin/firestore'
-import type { DB } from '../infra/database/FirestoreConection'
+import type { DB } from '../infra/database/FirestoreConnection'
 
 const collectionName = 'clients'
 

@@ -1,5 +1,5 @@
 // import type { DocumentReference, Firestore } from 'firebase/firestore'
-import type { DB } from '../infra/database/FirestoreConection'
+import type { DB } from '../infra/database/FirestoreConnection'
 
 const collectionName = 'tasks'
 
@@ -17,10 +17,10 @@ class TasksUseCases {
     return mappedRes
   }
 
-  async createTask (projecId: string, data: object): Promise<object> {
+  async createTask (projectId: string, data: object): Promise<object> {
     const payload = {
       ...data,
-      projectId: projecId
+      projectId
     }
     const res = await this.db.collection(collectionName).add(payload)
     return {

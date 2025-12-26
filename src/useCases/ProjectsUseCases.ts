@@ -1,5 +1,5 @@
 // import type { QueryDocumentSnapshot } from 'firebase/firestore'
-import type { DB } from '../infra/database/FirestoreConection'
+import type { DB } from '../infra/database/FirestoreConnection'
 
 const projectsCollections = 'projects'
 const clientsCollection = 'clients'
