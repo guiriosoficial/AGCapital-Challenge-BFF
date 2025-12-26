@@ -36,4 +36,11 @@ yarn build
 yarn lint
 ```
 
+## TODO
+- Cascade delete
+- Unit Testes
+- Handle Magic Numbers
+- Hide Credential
+- Adjust Readme to Explain Firebase
+
 > **NOTE:** I Got de Job! 💸
