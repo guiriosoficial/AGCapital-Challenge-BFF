@@ -7,14 +7,14 @@ class TasksUseCases {
   constructor (private readonly db: DB) {}
 
   async searchTasks (projectId: string): Promise<object> {
-    const res = await this.db.collection(collectionName).where('projectId', '==', projectId).get()
-    const mappedRes = res.docs.map((doc) => ({
+    const res =
+      await this.db.collection(collectionName).where('projectId', '==', projectId).get()
+
+    return res.docs.map((doc) => ({
       id: doc.id,
       status: doc.data().status,
       description: doc.data().description
     }))
-
-    return mappedRes
   }
 
   async createTask (projectId: string, data: object): Promise<object> {
@@ -23,6 +23,7 @@ class TasksUseCases {
       projectId
     }
     const res = await this.db.collection(collectionName).add(payload)
+
     return {
       id: res.id,
       ...data
