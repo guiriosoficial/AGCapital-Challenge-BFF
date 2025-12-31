@@ -1,4 +1,3 @@
-// import type { DocumentReference, Firestore } from 'firebase/firestore'
 import type { DB } from '../infra/database/FirestoreConnection'
 
 const collectionName = 'tasks'

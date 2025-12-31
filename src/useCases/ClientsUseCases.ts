@@ -1,4 +1,3 @@
-// import type { DocumentReference, CollectionReference } from 'firebase-admin/firestore'
 import type { DB } from '../infra/database/FirestoreConnection'
 
 const collectionName = 'clients'
@@ -8,6 +7,7 @@ class ClientsUseCases {
 
   async createClient (data: object): Promise<object> {
     const res = await this.db.collection(collectionName).add(data)
+
     return {
       id: res.id,
       ...data
@@ -16,6 +16,7 @@ class ClientsUseCases {
 
   async updateClient (clientId: string, data: object): Promise<object> {
     await this.db.collection(collectionName).doc(clientId).update(data)
+
     return {
       id: clientId,
       ...data

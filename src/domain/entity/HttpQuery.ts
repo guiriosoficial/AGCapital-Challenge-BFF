@@ -1,1 +1,3 @@
-export default interface HttpQuery extends Record<string, any> {}
+interface HttpQuery extends Record<string, any> {}
+
+export default HttpQuery

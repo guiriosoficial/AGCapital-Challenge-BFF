@@ -8,7 +8,7 @@ ADD package.json /app
 ADD yarn.lock /app
 ADD package-lock.json /app
 ADD tsconfig.json /app
-RUN yarn install
-RUN yarn run build
-EXPOSE 3001
-CMD ["yarn", "run", "startprod"]
+RUN npm install
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "startprod"]
